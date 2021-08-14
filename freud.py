@@ -235,11 +235,17 @@ class FPaper_Extract:
 
             self.get_align_text = ''
         elif self.check.is_color_reset(self.check, ch):
-            self.extracted_text += '\x1b[0m'
+            if self.is_align:
+                self.get_align_text += '\x1b[0m'
+            else:
+                self.extracted_text += '\x1b[0m'
         else:
             data = ord(ch.decode('utf-8'))
             if (40 <= data <= 49) or (100 <= data <= 109):
-                self.extracted_text += f'\x1b[{data - 10}m'
+                if self.is_align:
+                    self.get_align_text += f'\x1b[{data - 10}m'
+                else:
+                    self.extracted_text += f'\x1b[{data - 10}m'
 
     def detect(self, ch):
         if self.is_style_marker:
