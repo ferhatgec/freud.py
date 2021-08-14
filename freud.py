@@ -183,20 +183,41 @@ class FPaper_Extract:
         # Just waiting for 3.10
         # Not platform specific
         if self.check.is_light_marker(self.check, ch):
-            self.extracted_text += '\x1b[0m'
+            if self.is_align:
+                self.get_align_text += '\x1b[0m'
+            else:
+                self.extracted_text += '\x1b[0m'
         elif self.check.is_bold_marker(self.check, ch):
-            self.extracted_text += '\x1b[1m'
+            if self.is_align:
+                self.get_align_text += '\x1b[1m'
+            else:
+                self.extracted_text += '\x1b[1m'
         elif self.check.is_dim_marker(self.check, ch):
-            self.extracted_text += '\x1b[2m'
+            if self.is_align:
+                self.get_align_text += '\x1b[2m'
+            else:
+                self.extracted_text += '\x1b[2m'
         elif self.check.is_italic_marker(self.check, ch):
-            self.extracted_text += '\x1b[3m'
+            if self.is_align:
+                self.get_align_text += '\x1b[3m'
+            else:
+                self.extracted_text += '\x1b[3m'
         elif self.check.is_underlined_marker(self.check, ch):
-            self.extracted_text += '\x1b[4m'
+            if self.is_align:
+                self.get_align_text += '\x1b[4m'
+            else:
+                self.extracted_text += '\x1b[4m'
         elif self.check.is_blink_marker(self.check, ch):
-            self.extracted_text += '\x1b[5m'
+            if self.is_align:
+                self.get_align_text += '\x1b[5m'
+            else:
+                self.extracted_text += '\x1b[5m'
         elif self.check.is_rapid_marker(self.check, ch):
             if system() == 'Windows':
-                self.extracted_text += '\x1b[6m'
+                if self.is_align:
+                    self.get_align_text += '\x1b[6m'
+                else:
+                    self.extracted_text += '\x1b[6m'
         elif self.check.is_left_align(self.check, ch):
             self.is_align = True
 
