@@ -19,6 +19,8 @@ import sys
 import termios
 import tty
 
+gazete_repository = 'https://github.com/ferhatgec/gazete'
+
 escape = 27
 up = 65
 down = 66
@@ -261,7 +263,7 @@ class FPaper_Extract:
             else:
                 self.extracted_text += '\x1b[0m'
         else:
-            data = ord(ch.decode('utf-8'))
+            data = ord(ch.decode('utf-8', 'ignore'))
             if (40 <= data <= 49) or (100 <= data <= 109):
                 if self.is_align:
                     self.get_align_text += f'\x1b[{data - 10}m'
@@ -298,9 +300,9 @@ class FPaper_Extract:
                 return
 
             if self.is_align:
-                self.get_align_text += ch.decode('utf-8')
+                self.get_align_text += ch.decode('utf-8', 'ignore')
             else:
-                self.extracted_text += ch.decode('utf-8')
+                self.extracted_text += ch.decode('utf-8', 'ignore')
 
     def extract(self):
         with open(self.filename, 'rb') as file:
@@ -426,6 +428,39 @@ class Totem:
 if len(sys.argv) < 2:
     exit(1)
 
-init = Totem(sys.argv[len(sys.argv) - 1])
+argument = sys.argv[1]
+is_gazete = False
+
+if argument == 'gazete':
+    from pathlib import Path
+    from subprocess import call, DEVNULL
+    from os import getenv
+    from shutil import rmtree
+
+    if not Path('/usr/bin/git').exists():
+        exit(1)
+
+    is_gazete = True
+    time: str = ''
+
+    if len(sys.argv) == 4:
+        time += f'{sys.argv[2]}_{sys.argv[3]}'
+    else:
+        from datetime import datetime
+
+        time += f'{datetime.now().month}_{str(datetime.now().year)[2:]}'
+
+    call(['git',
+         'clone',
+         gazete_repository,
+         getenv('HOME') + '/gazete'], stdout=DEVNULL)
+
+    if Path(getenv('HOME') + '/gazete/' + time).exists():
+        init = Totem(getenv('HOME') + '/gazete/' + time + '/gazete.fpaper')
+else:
+    init = Totem(sys.argv[len(sys.argv) - 1])
 
 init.init_buffer()
+
+if is_gazete:
+    rmtree(getenv('HOME') + '/gazete/')
